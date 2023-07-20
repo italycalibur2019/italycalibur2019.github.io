@@ -975,7 +975,7 @@ pre .javascript .function {
 }
 .brand {
   border-bottom: none;
-  color: $pink;
+  color: var(--brand-color);
   display: inline-block;
   line-height: 1.375em;
   padding: 0 40px;
@@ -1169,7 +1169,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #3e735b;
+  background: #1353ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1369,7 +1369,7 @@ pre .javascript .function {
   font-size: 0.8125em;
 }
 .footer {
-  color: $white;
+  color: #fff;
   font-size: 0.875em;
   padding: 20px 0;
 }
