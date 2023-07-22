@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Bad-Pig-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Bad-Pig-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.italycalibur.top","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="昨天仅仅是依葫芦画瓢将代码输入到Eclipse中并成功运行了而已，这次是将对代码进行从上到下的理解，一些涉及到Java数据类型的基础跳过，主要针对的是数据库方面的代码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hello.md">
+<meta property="og:url" content="http://www.italycalibur.top/2023/07/22/Java%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="随笔小站">
+<meta property="og:description" content="昨天仅仅是依葫芦画瓢将代码输入到Eclipse中并成功运行了而已，这次是将对代码进行从上到下的理解，一些涉及到Java数据类型的基础跳过，主要针对的是数据库方面的代码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-22T07:14:53.000Z">
+<meta property="article:modified_time" content="2023-07-22T09:46:29.873Z">
+<meta property="article:author" content="意大利咖喱帮">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.italycalibur.top/2023/07/22/Java%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>hello.md | 随笔小站</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">随笔小站</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="fa fa-download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.italycalibur.top/2023/07/22/Java%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="意大利咖喱帮">
+      <meta itemprop="description" content="记录点滴">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随笔小站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          hello.md
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-07-22 15:14:53 / 修改时间：17:46:29" itemprop="dateCreated datePublished" datetime="2023-07-22T15:14:53+08:00">2023-07-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">代码学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>昨天仅仅是依葫芦画瓢将<a href="http://www.italycalibur.top/2023/07/21/Java%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%EF%BC%88%E4%B8%80%EF%BC%89">代码</a>输入到Eclipse中并成功运行了而已，这次是将对代码进行从上到下的理解，一些涉及到Java数据类型的基础跳过，主要针对的是数据库方面的代码。</p>
+<span id="more"></span>
+
+<h2 id="依赖库"><a href="#依赖库" class="headerlink" title="依赖库"></a>依赖库</h2><p><i>这里仅把Eclipse对这六个包的介绍进行截取和翻译，具体的作用详见之后的语句进行讲解</i></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SQL包，包含了一系列用于与数据库进行通信的类和接口</span></span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.DriverManager;</span><br><span class="line"><span class="keyword">import</span> java.sql.PreparedStatement;</span><br><span class="line"><span class="keyword">import</span> java.sql.ResultSet;</span><br><span class="line"><span class="keyword">import</span> java.sql.ResultSetMetaData;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"><span class="comment">//util包，提供了一些实用的方法和数据结构，此次不详细讲解</span></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br></pre></td></tr></table></figure>
+
+<h3 id="java-sql-Connection"><a href="#java-sql-Connection" class="headerlink" title="java.sql.Connection"></a>java.sql.Connection</h3><p><i>A connection (session) with a specific database. SQL statements are executed and results are returned within the context of a connection.</i>   </p>
+<p>译：与特定数据库的连接（会话）。在连接上下文中执行SQL语句并返回结果。 </p>
+<h3 id="java-sql-DriverManager"><a href="#java-sql-DriverManager" class="headerlink" title="java.sql.DriverManager"></a>java.sql.DriverManager</h3><p><i>The basic service for managing a set of JDBC drivers. </i> </p>
+<p>译：用于管理一组JDBC驱动程序的基本服务。  </p>
+<h3 id="java-sql-PreparedStatement"><a href="#java-sql-PreparedStatement" class="headerlink" title="java.sql.PreparedStatement"></a>java.sql.PreparedStatement</h3><p><i>A SQL statement is precompiled and stored in a PreparedStatement object. This object can then be used to efficiently execute this statement multiple times.</i></p>
+<p>译：SQL语句是预编译的，并存储在PreparedStatement对象中。然后可以使用此对象多次有效地执行此语句。</p>
+<h3 id="java-sql-ResultSet"><a href="#java-sql-ResultSet" class="headerlink" title="java.sql.ResultSet"></a>java.sql.ResultSet</h3><p><i>A table of data representing a database result set, which is usually generated by executing a statement that queries the database. </i></p>
+<p>译：表示数据库结果集的数据表，通常通过执行查询数据库的语句生成。</p>
+<h3 id="java-sql-ResultSetMetaData"><a href="#java-sql-ResultSetMetaData" class="headerlink" title="java.sql.ResultSetMetaData"></a>java.sql.ResultSetMetaData</h3><p><i>An object that can be used to get information about the types and properties of the columns in a ResultSet object.</i></p>
+<p>译：一个可用于获取有关ResultSet对象中列的类型和属性的信息的对象。</p>
+<h3 id="java-sql-SQLException"><a href="#java-sql-SQLException" class="headerlink" title="java.sql.SQLException"></a>java.sql.SQLException</h3><p><i>An exception that provides information on a database access error or other errors.</i></p>
+<p>译：提供有关数据库访问错误或其他错误的信息的异常。</p>
+<h2 id="获取数据库连接"><a href="#获取数据库连接" class="headerlink" title="获取数据库连接"></a>获取数据库连接</h2><p>核心语句如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">// 数据库驱动</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">dbdriver</span> <span class="operator">=</span> <span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>;</span><br><span class="line"><span class="comment">// MySQL连接地址</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">dburl</span> <span class="operator">=</span> <span class="string">&quot;jdbc:mysql://localhost:3306/myDatabaseName?useSSL=false&quot;</span>;</span><br><span class="line"><span class="comment">// 用户名</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">username</span> <span class="operator">=</span> <span class="string">&quot;root&quot;</span>;</span><br><span class="line"><span class="comment">// 密码</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">password</span> <span class="operator">=</span> <span class="string">&quot;123456&quot;</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 1. 获取数据库连接</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> myProjName</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Connection <span class="title function_">getConn</span><span class="params">(String myProjName)</span> &#123;</span><br><span class="line">	<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">           <span class="comment">// 加载数据库驱动程序</span></span><br><span class="line">		Class.forName(dbdriver);</span><br><span class="line">           <span class="comment">// 替换数据库名称</span></span><br><span class="line">		<span class="type">String</span> <span class="variable">myJdbcUrl</span> <span class="operator">=</span> dburl.replace(<span class="string">&quot;myDatabaseName&quot;</span>, myProjName);</span><br><span class="line">           <span class="comment">// 连接数据库</span></span><br><span class="line">		conn = DriverManager.getConnection(myJdbcUrl, username, password);</span><br><span class="line">	&#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> conn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：<br>（1）8.0以前的MySQL加载数据库驱动程序的名称为<i>com.mysql.jdbc.Driver</i>；<br>（2）localhost也可以替换成127.0.0.1；<br>（3）3306为MySQL默认端口号；<br>（4）myDatabaseName是数据库名称，替换成自己需要的数据库就行；<br>（5）8.0之后的MySQL必须在数据库连接地址后面加上<i>?useSSL&#x3D;false</i>，不然运行时会报错。</p>
+<h2 id="关闭数据库连接（略）"><a href="#关闭数据库连接（略）" class="headerlink" title="关闭数据库连接（略）"></a>关闭数据库连接（略）</h2><p>这个方法没有什么值得讲解的地方，不多赘述</p>
+<h2 id="3-按行返回表的元素"><a href="#3-按行返回表的元素" class="headerlink" title="3. 按行返回表的元素"></a>3. 按行返回表的元素</h2><p>核心代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;List&lt;Object&gt;&gt; <span class="title function_">getData</span><span class="params">(String ProjName, String sql)</span> &#123;</span><br><span class="line">		<span class="comment">// 获取连接</span></span><br><span class="line">        <span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> getConn(ProjName);</span><br><span class="line">        <span class="comment">// PreparedStatement对象</span></span><br><span class="line">		<span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        <span class="comment">// 创建一个内嵌List的数组对象</span></span><br><span class="line">		List&lt;List&lt;Object&gt;&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;List&lt;Object&gt;&gt;();</span><br><span class="line">        <span class="comment">// ResultSet对象</span></span><br><span class="line">		<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 获取数据库操作对象</span></span><br><span class="line">			ps = conn.prepareStatement(sql);</span><br><span class="line">            <span class="comment">// 执行查询操作</span></span><br><span class="line">			rs = ps.executeQuery();</span><br><span class="line">            <span class="comment">// 获得表结构</span></span><br><span class="line">			<span class="type">ResultSetMetaData</span> <span class="variable">md</span> <span class="operator">=</span> rs.getMetaData();</span><br><span class="line">            <span class="comment">// 获得列属性</span></span><br><span class="line">			<span class="type">int</span> <span class="variable">columCount</span> <span class="operator">=</span> md.getColumnCount();</span><br><span class="line">            <span class="comment">// 执行循环，将表中元素按每列进行存储</span></span><br><span class="line">			<span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                <span class="comment">// 在内嵌List中创建数组对象</span></span><br><span class="line">				List&lt;Object&gt; lst = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;Object&gt;();</span><br><span class="line">                <span class="comment">// 将列元素依次存储在数据中</span></span><br><span class="line">				<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt; columCount; i++) &#123;</span><br><span class="line">					lst.add(rs.getObject(i) == <span class="literal">null</span> ? <span class="string">&quot; &quot;</span> : rs.getObject(i));</span><br><span class="line">				&#125;</span><br><span class="line">                <span class="comment">// 将每个数组存储在嵌套数组中</span></span><br><span class="line">				list.add(lst);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// 操作结束，关闭数据库以节省内存</span></span><br><span class="line">			closeAll(rs, ps, conn);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> list;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>意大利咖喱帮
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.italycalibur.top/2023/07/22/Java%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%EF%BC%88%E4%BA%8C%EF%BC%89/" title="hello.md">http://www.italycalibur.top/2023/07/22/Java数据库编程学习记录（二）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      
+        <div>
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+        </div>
+      
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/21/Java%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="Java数据库编程学习记录（一）">
+      <i class="fa fa-chevron-left"></i> Java数据库编程学习记录（一）
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">依赖库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#java-sql-Connection"><span class="nav-number">1.1.</span> <span class="nav-text">java.sql.Connection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-sql-DriverManager"><span class="nav-number">1.2.</span> <span class="nav-text">java.sql.DriverManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-sql-PreparedStatement"><span class="nav-number">1.3.</span> <span class="nav-text">java.sql.PreparedStatement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-sql-ResultSet"><span class="nav-number">1.4.</span> <span class="nav-text">java.sql.ResultSet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-sql-ResultSetMetaData"><span class="nav-number">1.5.</span> <span class="nav-text">java.sql.ResultSetMetaData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-sql-SQLException"><span class="nav-number">1.6.</span> <span class="nav-text">java.sql.SQLException</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.</span> <span class="nav-text">获取数据库连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%97%AD%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%EF%BC%88%E7%95%A5%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">关闭数据库连接（略）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%8C%89%E8%A1%8C%E8%BF%94%E5%9B%9E%E8%A1%A8%E7%9A%84%E5%85%83%E7%B4%A0"><span class="nav-number">4.</span> <span class="nav-text">3. 按行返回表的元素</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="意大利咖喱帮"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">意大利咖喱帮</p>
+  <div class="site-description" itemprop="description">记录点滴</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/italycalibur2019" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;italycalibur2019" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:920893925@qq.com" title="电子邮箱 → mailto:920893925@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>电子邮箱</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/3461574809356930" title="B站 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;3461574809356930" rel="noopener" target="_blank"><i class="fab fa-bilibili fa-fw"></i>B站</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">by italycalibur</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">7k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
