@@ -1168,7 +1168,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #66ff63;
+  background: #e7ff37;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1368,7 +1368,7 @@ pre .javascript .function {
   font-size: 0.8125em;
 }
 .footer {
-  color: #000;
+  color: #ccc;
   font-size: 0.875em;
   padding: 20px 0;
 }
@@ -2230,7 +2230,7 @@ ul.breadcrumb li + li:last-child {
   }
 }
 .site-brand-container {
-  background: #222;
+  background: #ffc0cb;
 }
 @media (max-width: 991px) {
   .site-brand-container {
