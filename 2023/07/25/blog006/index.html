@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Bad-Pig-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Bad-Pig-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"italycalibur.top","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="通过web端成功连接数据库后，接下来尝试制作一个登录模块。本文参考博主HeartCloud的《JavaWeb连接MySQL数据库》的第三部分，并在此基础上增加了一些自己的特色。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaWeb项目训练（三）">
+<meta property="og:url" content="http://italycalibur.top/2023/07/25/blog006/index.html">
+<meta property="og:site_name" content="随笔小站">
+<meta property="og:description" content="通过web端成功连接数据库后，接下来尝试制作一个登录模块。本文参考博主HeartCloud的《JavaWeb连接MySQL数据库》的第三部分，并在此基础上增加了一些自己的特色。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://italycalibur.top/2023/07/25/blog006/6-1.png">
+<meta property="og:image" content="http://italycalibur.top/2023/07/25/blog006/6-2.png">
+<meta property="og:image" content="http://italycalibur.top/2023/07/25/blog006/6-3.png">
+<meta property="og:image" content="http://italycalibur.top/2023/07/25/blog006/6-4.png">
+<meta property="og:image" content="http://italycalibur.top/2023/07/25/blog006/6-5.png">
+<meta property="og:image" content="http://italycalibur.top/2023/07/25/blog006/6-6.png">
+<meta property="article:published_time" content="2023-07-25T09:08:01.000Z">
+<meta property="article:modified_time" content="2023-07-25T10:18:18.360Z">
+<meta property="article:author" content="意大利咖喱帮">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://italycalibur.top/2023/07/25/blog006/6-1.png">
+
+<link rel="canonical" href="http://italycalibur.top/2023/07/25/blog006/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JavaWeb项目训练（三） | 随笔小站</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">随笔小站</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="fa fa-download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://italycalibur.top/2023/07/25/blog006/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="意大利咖喱帮">
+      <meta itemprop="description" content="每天进步一点点">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随笔小站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaWeb项目训练（三）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-07-25 17:08:01 / 修改时间：18:18:18" itemprop="dateCreated datePublished" datetime="2023-07-25T17:08:01+08:00">2023-07-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">代码学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>通过web端成功连接数据库后，接下来尝试制作一个登录模块。本文参考博主HeartCloud的<a target="_blank" rel="noopener" href="https://www.cnblogs.com/soosoo/p/16219491.html">《JavaWeb连接MySQL数据库》</a>的第三部分，并在此基础上增加了一些自己的特色。</p>
+<span id="more"></span>
+
+<p>这位博主有部分内容没有提及，导致我在编写的过程中走了些弯路，在此会将参考博文里的一些坑拿出来讲。</p>
+<h2 id="创建包、导入库和给jsp做分类"><a href="#创建包、导入库和给jsp做分类" class="headerlink" title="创建包、导入库和给jsp做分类"></a>创建包、导入库和给jsp做分类</h2><p>今天下了专业版的IDEA，把Eclipse的项目转移到了里面（还是习惯JetBrain系列的码字，自动提示做得非常舒服），所以之后的操作都在IDEA里实现。  </p>
+<p>在WEB-INF的lib文件夹导入<a href="http://italycalibur.top/2023/07/25/blog004/">之前</a>准备的库（即jdbc、dbutils和c3p0）  </p>
+<p>在Web文件夹中新建目录admin（放管理员平台界面，admin.jsp）、db（放数据库操作界面,check_all_user.jsp）、login（放登录界面,login.jsp和failed.jsp）、uer（放用户平台界面,user.jsp），注意不要新建在WEN-INT当中！</p>
+<p>在src中新建包名com.italycalibur（包名自己随意），里面要包括：dao、model、servlet和utils。<br>每个包里各新建一个类：UserDao、User、LoginServlet、DBUtil。  </p>
+<p>各包的意义如下：<br>dao：数据访问层，作用是封装对数据库的访问。<br>model（entity）：实体层，作用是封装实体结构。<br>servlet：使用Javax.Servlet包的类，主要功能在于交互式地浏览和修改数据，生成动态Web内容。<br>utils：工具层，这里主要是导入自己写的DBUtils包。博主的代码涉及到了这点，害得我找了半天才发现需要自己手动配置（恼）。</p>
+<p>最后不要忘了需要在src里面新建c3p0-config.xml文件，这是涉及到dbutil能否正常读取数据库的功能。</p>
+<h3 id="c3p0-config-xml的内容"><a href="#c3p0-config-xml的内容" class="headerlink" title="c3p0-config.xml的内容"></a>c3p0-config.xml的内容</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version =<span class="string">&quot;1.0&quot;</span> encoding= <span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">c3p0-config</span>&gt;</span></span><br><span class="line">       <span class="comment">&lt;!-- 默认配置，c3p0框架默认加载这段默认配置 --&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">default-config</span>&gt;</span></span><br><span class="line">             <span class="comment">&lt;!-- 配置JDBC 四个基本属性 --&gt;</span></span><br><span class="line">             <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span> =<span class="string">&quot;driverClass&quot;</span> &gt;</span>com.mysql.cj.jdbc.Driver&lt;/property &gt;</span><br><span class="line">             <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span> =<span class="string">&quot;jdbcUrl&quot;</span> &gt;</span>jdbc:mysql:///shop&lt;/property &gt;</span><br><span class="line">             <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span> =<span class="string">&quot;user&quot;</span> &gt;</span>root&lt;/property &gt;</span><br><span class="line">             <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span> =<span class="string">&quot;password&quot;</span> &gt;</span>123456&lt;/property &gt;</span><br><span class="line">       <span class="tag">&lt;/<span class="name">default-config</span>&gt;</span> <span class="comment">&lt;!-- This app is massive! --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">c3p0-config</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以上操作最终效果：<br><img src="/2023/07/25/blog006/6-1.png" alt="项目结构"></p>
+<h2 id="编写jsp文件"><a href="#编写jsp文件" class="headerlink" title="编写jsp文件"></a>编写jsp文件</h2><h3 id="login-jsp"><a href="#login-jsp" class="headerlink" title="login.jsp"></a>login.jsp</h3><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">&quot;java&quot;</span> contentType=<span class="string">&quot;text/html; charset=UTF-8&quot;</span></span><br><span class="line">    pageEncoding=<span class="string">&quot;UTF-8&quot;</span>%&gt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">	&lt;head&gt;</span><br><span class="line">		&lt;meta charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">		&lt;title&gt;登录&lt;/title&gt;</span><br><span class="line">	&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">	&lt;div style=<span class="string">&quot;text-align: center; margin-top:120px&quot;</span>&gt;</span><br><span class="line">		&lt;form action=<span class="string">&quot;LoginServet&quot;</span> methord=<span class="string">&quot;post&quot;</span>&gt;</span><br><span class="line">			&lt;table style=<span class="string">&quot;margin-left:40%&quot;</span>&gt;</span><br><span class="line">				&lt;h1&gt;登录&lt;/h1&gt;</span><br><span class="line">				&lt;tr&gt;</span><br><span class="line">					&lt;td&gt;用户编号：&lt;/td&gt;</span><br><span class="line">					&lt;td&gt;&lt;input name=<span class="string">&quot;uid&quot;</span> type=<span class="string">&quot;text&quot;</span> size=<span class="string">&quot;21&quot;</span>&gt;&lt;/td&gt;</span><br><span class="line">				&lt;/tr&gt;</span><br><span class="line">				&lt;tr&gt;</span><br><span class="line">					&lt;td&gt;密码：&lt;/td&gt;</span><br><span class="line">					&lt;td&gt;&lt;input name=<span class="string">&quot;password&quot;</span> type=<span class="string">&quot;password&quot;</span> size=<span class="string">&quot;21&quot;</span>&gt;&lt;/td&gt;</span><br><span class="line">				&lt;/tr&gt;</span><br><span class="line">			&lt;/table&gt;</span><br><span class="line">			&lt;input type=<span class="string">&quot;submit&quot;</span> value=<span class="string">&quot;登录&quot;</span>&gt;</span><br><span class="line">			&lt;input type=<span class="string">&quot;reset&quot;</span> value=<span class="string">&quot;重置&quot;</span>&gt;</span><br><span class="line">		&lt;/form&gt;</span><br><span class="line">	&lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="failed-jsp"><a href="#failed-jsp" class="headerlink" title="failed.jsp"></a>failed.jsp</h3><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">&quot;java&quot;</span> contentType=<span class="string">&quot;text/html; charset=UTF-8&quot;</span></span><br><span class="line">    pageEncoding=<span class="string">&quot;UTF-8&quot;</span>%&gt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">	&lt;head&gt;</span><br><span class="line">		&lt;meta charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">		&lt;title&gt;登陆失败&lt;/title&gt;</span><br><span class="line">	&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">	&lt;h1&gt;失败&lt;/h1&gt;&lt;br /&gt;</span><br><span class="line">	&lt;a href=<span class="string">&quot;login.jsp&quot;</span>&gt;请重新登录&lt;/a&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="admin-jsp"><a href="#admin-jsp" class="headerlink" title="admin.jsp"></a>admin.jsp</h3><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">&quot;java&quot;</span> contentType=<span class="string">&quot;text/html; charset=UTF-8&quot;</span></span><br><span class="line">    pageEncoding=<span class="string">&quot;UTF-8&quot;</span>%&gt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">	&lt;head&gt;</span><br><span class="line">		&lt;meta charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">		&lt;title&gt;管理员主页&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">	&lt;div style=<span class="string">&quot;display: flex; flex-direction: column; justify-content: space-between;&quot;</span>&gt;</span><br><span class="line">		&lt;a href=<span class="string">&quot;db/check_all_user.jsp&quot;</span>&gt;显示所有居民信息&lt;/a&gt;</span><br><span class="line">	&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="user-jsp"><a href="#user-jsp" class="headerlink" title="user.jsp"></a>user.jsp</h3><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">&quot;java&quot;</span> contentType=<span class="string">&quot;text/html; charset=UTF-8&quot;</span></span><br><span class="line">    pageEncoding=<span class="string">&quot;UTF-8&quot;</span>%&gt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">        &lt;meta charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">        &lt;title&gt;用户主页&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">	&lt;font color=<span class="string">&quot;red&quot;</span> size=<span class="string">&quot;24&quot;</span>&gt;芝士居民&lt;/font&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="check-all-user-jsp"><a href="#check-all-user-jsp" class="headerlink" title="check_all_user.jsp"></a>check_all_user.jsp</h3><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">&quot;java&quot;</span> contentType=<span class="string">&quot;text/html; charset=UTF-8&quot;</span></span><br><span class="line">    pageEncoding=<span class="string">&quot;UTF-8&quot;</span>%&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">&quot;java.sql.*&quot;</span> %&gt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">	&lt;head&gt;</span><br><span class="line">		&lt;meta charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">		&lt;title&gt;所有用户信息&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">	&lt;h3 style=<span class="string">&quot;text-align: center&quot;</span>&gt;所有用户信息&lt;/h3&gt;</span><br><span class="line">	&lt;center&gt;</span><br><span class="line">	&lt;table border=<span class="string">&quot;2&quot;</span>&gt;</span><br><span class="line">		&lt;tr&gt;</span><br><span class="line">			&lt;th&gt;用户编号&lt;/th&gt;</span><br><span class="line">			&lt;th&gt;用户名称&lt;/th&gt;</span><br><span class="line">			&lt;th&gt;用户密码&lt;/th&gt;</span><br><span class="line">			&lt;th&gt;楼栋号&lt;/th&gt;</span><br><span class="line">			&lt;th&gt;楼层号&lt;/th&gt;</span><br><span class="line">			&lt;th&gt;房间号&lt;/th&gt;</span><br><span class="line">		&lt;/tr&gt;</span><br><span class="line">		&lt;%</span><br><span class="line">			Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">			<span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;jdbc:mysql:///shop&quot;</span>;</span><br><span class="line">			<span class="type">String</span> <span class="variable">username</span> <span class="operator">=</span> <span class="string">&quot;root&quot;</span>;</span><br><span class="line">			<span class="type">String</span> <span class="variable">password</span> <span class="operator">=</span> <span class="string">&quot;123456&quot;</span>;</span><br><span class="line">			<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(url, username, password);</span><br><span class="line">			<span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select uid,name,password,building, floor, room from user where type=1&quot;</span>;</span><br><span class="line">			<span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> conn.prepareStatement(sql);</span><br><span class="line">			<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> ps.executeQuery();</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="type">String</span> <span class="variable">uid</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">				<span class="type">String</span> <span class="variable">uname</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">				<span class="type">String</span> <span class="variable">upassword</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">				<span class="type">int</span> <span class="variable">ubuilding</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">				<span class="type">int</span> <span class="variable">ufloor</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">				<span class="type">int</span> <span class="variable">uroom</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">				<span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">					uid = rs.getString(<span class="string">&quot;uid&quot;</span>);</span><br><span class="line">					uname = rs.getString(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">					upassword = rs.getString(<span class="string">&quot;password&quot;</span>);</span><br><span class="line">					ubuilding = rs.getInt(<span class="string">&quot;building&quot;</span>);</span><br><span class="line">					ufloor = rs.getInt(<span class="string">&quot;floor&quot;</span>);</span><br><span class="line">					uroom = rs.getInt(<span class="string">&quot;room&quot;</span>);</span><br><span class="line">		%&gt;</span><br><span class="line">		&lt;tr&gt;</span><br><span class="line">			&lt;td&gt;&lt;%=uid%&gt;&lt;/td&gt;</span><br><span class="line">			&lt;td&gt;&lt;%=uname%&gt;&lt;/td&gt;</span><br><span class="line">			&lt;td&gt;&lt;%=upassword%&gt;&lt;/td&gt;</span><br><span class="line">			&lt;td&gt;&lt;%=ubuilding%&gt;&lt;/td&gt;</span><br><span class="line">			&lt;td&gt;&lt;%=ufloor%&gt;&lt;/td&gt;</span><br><span class="line">			&lt;td&gt;&lt;%=uroom%&gt;&lt;/td&gt;</span><br><span class="line">		&lt;/tr&gt;</span><br><span class="line">		&lt;%</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">finally</span> &#123;</span><br><span class="line">				<span class="comment">//释放对象</span></span><br><span class="line">				<span class="keyword">if</span> (ps != <span class="literal">null</span>) &#123;</span><br><span class="line">					ps.close();</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (conn != <span class="literal">null</span>) &#123;</span><br><span class="line">					conn.close();</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (rs != <span class="literal">null</span>) &#123;</span><br><span class="line">					rs.close();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		%&gt;</span><br><span class="line">	&lt;/table&gt;</span><br><span class="line">	&lt;/center&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="编写Java类"><a href="#编写Java类" class="headerlink" title="编写Java类"></a>编写Java类</h2><h3 id="DBUtil-java"><a href="#DBUtil-java" class="headerlink" title="DBUtil.java"></a>DBUtil.java</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.italycalibur.utils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.PreparedStatement;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.sql.DataSource;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mchange.v2.c3p0.ComboPooledDataSource;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DButil</span> &#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="type">ComboPooledDataSource</span> <span class="variable">ds</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ComboPooledDataSource</span>();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title function_">getcon</span><span class="params">()</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">		<span class="keyword">return</span> ds.getConnection();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> DataSource <span class="title function_">getDataSource</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> ds;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">(PreparedStatement ps, Connection conn)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">		<span class="keyword">if</span> (ps != <span class="literal">null</span>) &#123;</span><br><span class="line">			ps.close();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (conn == <span class="literal">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			conn.close();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="User-java"><a href="#User-java" class="headerlink" title="User.java"></a>User.java</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.italycalibur.model;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">	<span class="keyword">private</span> String userID;</span><br><span class="line">	<span class="keyword">private</span> String userName;</span><br><span class="line">	<span class="keyword">private</span> String password;</span><br><span class="line">	<span class="keyword">private</span> <span class="type">int</span> building;</span><br><span class="line">	<span class="keyword">private</span> <span class="type">int</span> floor;</span><br><span class="line">	<span class="keyword">private</span> <span class="type">int</span> room;</span><br><span class="line">	<span class="keyword">private</span> <span class="type">int</span> userType;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">getUserID</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> userID;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserID</span><span class="params">(String userID)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.userID = userID;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">getUserName</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> userName;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserName</span><span class="params">(String userName)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.userName = userName;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">getPassword</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> password;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setPassword</span><span class="params">(String password)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.password = password;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getBuilding</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> building;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setBuilding</span><span class="params">(<span class="type">int</span> building)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.building = building;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getFloor</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> floor;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setFloor</span><span class="params">(<span class="type">int</span> floor)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.floor = floor;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getRoom</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> room;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRoom</span><span class="params">(<span class="type">int</span> room)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.room = room;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getUserType</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> userType;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserType</span><span class="params">(<span class="type">int</span> userType)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.userType = userType;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="UserDao-java"><a href="#UserDao-java" class="headerlink" title="UserDao.java"></a>UserDao.java</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.italycalibur.dao;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.PreparedStatement;</span><br><span class="line"><span class="keyword">import</span> java.sql.ResultSet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.italycalibur.model.User;</span><br><span class="line"><span class="keyword">import</span> com.italycalibur.utils.DButil;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDao</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> type;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 用户登录，根据不同类型的用户进入不同的主页</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> userID</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> password</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">public</span> User <span class="title function_">login</span><span class="params">(String userID, String password)</span> &#123;</span><br><span class="line">		<span class="type">User</span> <span class="variable">u</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">		<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">		<span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">		<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			conn = DButil.getcon();</span><br><span class="line">			<span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select * from user where uid=? and password=?&quot;</span>;</span><br><span class="line">			ps = (PreparedStatement) conn.prepareStatement(sql);</span><br><span class="line">			ps.setString(<span class="number">1</span>, userID);</span><br><span class="line">			ps.setString(<span class="number">2</span>, password);</span><br><span class="line">			rs = ps.executeQuery();</span><br><span class="line">			<span class="keyword">if</span> (rs.next()) &#123;</span><br><span class="line">				u = <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">				u.setUserID(rs.getString(<span class="number">1</span>));</span><br><span class="line">				u.setPassword(rs.getString(<span class="number">3</span>));</span><br><span class="line">				<span class="keyword">if</span> (rs.getInt(<span class="number">7</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">					System.out.println(<span class="string">&quot;管理员登录成功！&quot;</span>);</span><br><span class="line">					type = <span class="number">0</span>;</span><br><span class="line">				&#125; <span class="keyword">else</span> <span class="keyword">if</span> (rs.getInt(<span class="number">7</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">					System.out.println(<span class="string">&quot;用户登录成功！&quot;</span>);</span><br><span class="line">					type = <span class="number">1</span>;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					System.out.println(<span class="string">&quot;用户类型错误！&quot;</span>);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				System.out.println(<span class="string">&quot;用户编号或者密码错误！&quot;</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> u;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="LoginServlet-java"><a href="#LoginServlet-java" class="headerlink" title="LoginServlet.java"></a>LoginServlet.java</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.italycalibur.servlet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpSession;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.italycalibur.dao.UserDao;</span><br><span class="line"><span class="keyword">import</span> com.italycalibur.model.User;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoginServlet</span> <span class="keyword">extends</span> <span class="title class_">HttpServlet</span> &#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">		<span class="type">HttpSession</span> <span class="variable">session</span> <span class="operator">=</span> req.getSession();</span><br><span class="line"></span><br><span class="line">		<span class="type">String</span> <span class="variable">id</span> <span class="operator">=</span> req.getParameter(<span class="string">&quot;uid&quot;</span>);</span><br><span class="line">		<span class="type">String</span> <span class="variable">pwd</span> <span class="operator">=</span> req.getParameter(<span class="string">&quot;password&quot;</span>);</span><br><span class="line">		<span class="type">UserDao</span> <span class="variable">userDao</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UserDao</span>();</span><br><span class="line"></span><br><span class="line">		<span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> (User) userDao.login(id, pwd);</span><br><span class="line">		<span class="keyword">if</span> (user != <span class="literal">null</span>) &#123;</span><br><span class="line">			session.setAttribute(id, user);</span><br><span class="line">			<span class="keyword">if</span> (userDao.type == <span class="number">0</span>) &#123;</span><br><span class="line">				req.getRequestDispatcher(<span class="string">&quot;admin/admin.jsp&quot;</span>).forward(req, resp);</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (userDao.type == <span class="number">1</span>) &#123;</span><br><span class="line">				req.getRequestDispatcher(<span class="string">&quot;user/user.jsp&quot;</span>).forward(req, resp);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				req.getRequestDispatcher(<span class="string">&quot;login/failed.jsp&quot;</span>).forward(req, resp);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			req.getRequestDispatcher(<span class="string">&quot;login/failed.jsp&quot;</span>).forward(req, resp);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">		doGet(req, resp);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="修改web-xml"><a href="#修改web-xml" class="headerlink" title="修改web.xml"></a>修改web.xml</h2><p>为了让我们一启动tomcat就能显示登陆页面，我们需要设置web.xml的内容。自动生成的文件默认打开主页为index.jsp，并且没有servlet的声明，没有这个声明就无法使用servlet类的功能。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> </span></span><br><span class="line"><span class="tag">		 <span class="attr">xmlns</span>=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span> </span></span><br><span class="line"><span class="tag">		 <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee </span></span></span><br><span class="line"><span class="string"><span class="tag">		 http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;</span> </span></span><br><span class="line"><span class="tag">		 <span class="attr">id</span>=<span class="string">&quot;WebApp_ID&quot;</span> </span></span><br><span class="line"><span class="tag">		 <span class="attr">version</span>=<span class="string">&quot;4.0&quot;</span></span></span><br><span class="line"><span class="tag">		 <span class="attr">metadata-complete</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>LoginServet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>com.italycalibur.servlet.LoginServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>LoginServet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/LoginServet<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">  <span class="tag">&lt;<span class="name">welcome-file-list</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">welcome-file</span>&gt;</span>login/login.jsp<span class="tag">&lt;/<span class="name">welcome-file</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">welcome-file-list</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="部署到服务器"><a href="#部署到服务器" class="headerlink" title="部署到服务器"></a>部署到服务器</h2><p>因为用到IDEA了，所以之前在Eclipse的服务器配置就不管用了，前面<a target="_blank" rel="noopener" href="https://blog.csdn.net/li__shuai/article/details/117996954">Eclipse转IDEA的教程</a>我直接贴上去了。这里讲IDEA的服务器配置。  </p>
+<p>在“运行”菜单中找到“编辑配置”（我这里安装了官方汉化插件，这一点确实比Eclipse舒服^-^），点击左上角的“+”，选择Tomcat服务器-&gt;本地，右边一栏的名称输入合适的名字（一般都是项目名），服务器一栏的应用程序服务器直接在本地选择服务器文件夹；URL一栏可以默认，但更推荐加上“&#x2F;项目名”；JRE选择下好的jdk；<br>有一点要注意，JMX端口号默认是1099，但是我每次运行都提示1099被占用，netstat了后也没找到占用进程（应该是网上很多人说的IDEA自己占用自己），我这里直接改成9099（该端口号建议改大点，不建议从相邻的数字去选，因为好像有一种说法是Windows系统开了Hyper-v后会有一段连续的端口号被征用）。  </p>
+<p>部署一栏点击“+”，选择外部源将lib的文件加入进去，也可以右键项目名，点击属性创建工件，将lib配置放在工件内，直接导入工件即可。下面的应用程序上下文，一定要跟URL端口号后面一致，不然每次启动服务器都会有404让你血压上涨！  </p>
+<p>配置完点击应用，再点击运行就可以看效果了。</p>
+<h2 id="数据库和表配置"><a href="#数据库和表配置" class="headerlink" title="数据库和表配置"></a>数据库和表配置</h2><p>我这里用的数据库shop，是准备练手社区采购管理系统的，登录模块用到的就user表，其格式为：  </p>
+<p>user（uid, name, passowrd, building, floor, room, type）  </p>
+<p>其中，uid为用户编号，name为用户名，password为用户密码，building、floor、room是针对居民用户的，分别代表楼栋、楼层和房间编号，type为用户类型（0为管理员，1为居民）。  </p>
+<p>我为这张表里面添加了两个管理员用户和三个居民用户。</p>
+<h2 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h2><p>登录界面：<br><img src="/2023/07/25/blog006/6-2.png" alt="登录界面"><br>管理员用户界面：<br><img src="/2023/07/25/blog006/6-3.png" alt="管理员用户界面"><br>查询全部居民信息界面：<br><img src="/2023/07/25/blog006/6-4.png" alt="查询全部居民信息界面"><br>居民用户界面：<br><img src="/2023/07/25/blog006/6-5.png" alt="居民用户界面"><br>登录失败界面：<br><img src="/2023/07/25/blog006/6-6.png" alt="登录失败界面"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>意大利咖喱帮
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://italycalibur.top/2023/07/25/blog006/" title="JavaWeb项目训练（三）">http://italycalibur.top/2023/07/25/blog006/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      
+        <div>
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+        </div>
+      
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+              <a href="/tags/MySQL/" rel="tag"><i class="fa fa-tag"></i> MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/25/blog005/" rel="prev" title="JavaWeb项目训练（二）">
+      <i class="fa fa-chevron-left"></i> JavaWeb项目训练（二）
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%8C%85%E3%80%81%E5%AF%BC%E5%85%A5%E5%BA%93%E5%92%8C%E7%BB%99jsp%E5%81%9A%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">创建包、导入库和给jsp做分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#c3p0-config-xml%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-number">1.1.</span> <span class="nav-text">c3p0-config.xml的内容</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E5%86%99jsp%E6%96%87%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">编写jsp文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#login-jsp"><span class="nav-number">2.1.</span> <span class="nav-text">login.jsp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#failed-jsp"><span class="nav-number">2.2.</span> <span class="nav-text">failed.jsp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#admin-jsp"><span class="nav-number">2.3.</span> <span class="nav-text">admin.jsp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#user-jsp"><span class="nav-number">2.4.</span> <span class="nav-text">user.jsp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#check-all-user-jsp"><span class="nav-number">2.5.</span> <span class="nav-text">check_all_user.jsp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E5%86%99Java%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">编写Java类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DBUtil-java"><span class="nav-number">3.1.</span> <span class="nav-text">DBUtil.java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#User-java"><span class="nav-number">3.2.</span> <span class="nav-text">User.java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UserDao-java"><span class="nav-number">3.3.</span> <span class="nav-text">UserDao.java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LoginServlet-java"><span class="nav-number">3.4.</span> <span class="nav-text">LoginServlet.java</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9web-xml"><span class="nav-number">4.</span> <span class="nav-text">修改web.xml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">部署到服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E8%A1%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">6.</span> <span class="nav-text">数据库和表配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%95%88%E6%9E%9C"><span class="nav-number">7.</span> <span class="nav-text">运行效果</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="意大利咖喱帮"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">意大利咖喱帮</p>
+  <div class="site-description" itemprop="description">每天进步一点点</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/italycalibur2019" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;italycalibur2019" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:920893925@qq.com" title="电子邮箱 → mailto:920893925@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>电子邮箱</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/3461574809356930" title="B站 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;3461574809356930" rel="noopener" target="_blank"><i class="fab fa-bilibili fa-fw"></i>B站</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">意大利咖喱帮</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">24k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
