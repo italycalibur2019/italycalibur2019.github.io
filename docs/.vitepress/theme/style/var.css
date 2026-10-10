@@ -1,0 +1,45 @@
+:root {
+    /* hero标题渐变色 */
+    --vp-home-hero-name-color: transparent;
+    --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
+
+    /*hero logo背景渐变色 */
+    --vp-home-hero-image-background-image: linear-gradient(-45deg, #bd34fe 50%, #47caff 50%);
+    --vp-home-hero-image-filter: blur(40px);
+}
+
+/* 首页 feature 卡片「查看项目」：渐变流动变色文字 */
+.VPFeature .link-text-value {
+    background: linear-gradient(120deg, #bd34fe, #41d1ff, #bd34fe);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* 只透明文字本身，不影响箭头图标的 currentColor */
+    -webkit-text-fill-color: transparent;
+    animation: vp-link-text-flow 4s linear infinite;
+}
+
+/* 箭头图标是 mask + currentColor 填充，需单独给它上渐变才能同步变色 */
+.VPFeature .link-text .link-text-icon {
+    background-color: transparent;
+    background-image: linear-gradient(120deg, #bd34fe, #41d1ff, #bd34fe);
+    background-size: 200% 100%;
+    animation: vp-link-text-flow 4s linear infinite;
+}
+
+@keyframes vp-link-text-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+/* 用户系统开启「减少动态效果」时停止流动，仅保留静态渐变 */
+@media (prefers-reduced-motion: reduce) {
+    .VPFeature .link-text-value,
+    .VPFeature .link-text .link-text-icon {
+        animation: none;
+    }
+}

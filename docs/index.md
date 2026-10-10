@@ -2,22 +2,30 @@
 layout: home
 
 hero:
-  name: "ItalyCalibur"
-  text: "个人站点"
-  tagline: "基于 VitePress 构建 —— 简洁、快速、以 Markdown 为中心"
+  name: "Italycalibur的小站"
+  text: "随缘记录各种东西"
+  tagline: "（310个月的）小孩子不懂事记着玩的"
   actions:
     - theme: brand
-      text: 快速开始
-      link: /guide/getting-started
+      text: Github
+      link: 'https://github.com/italycalibur2019'
     - theme: alt
       text: 关于本站
       link: /about
+  image:
+      src: /logo.png
+      alt: 网页的logo图标
 
 features:
-  - title: 简单易用
-    details: 以 Markdown 为中心的项目结构，用最少的配置即可创建漂亮的站点。
-  - title: 极致速度
+  - icon: 🛠️
+    title: 开发项目
+    details: 记录我自己捣鼓的一些小项目，点进去看看介绍和玩法。
+    link: /developments/
+    linkText: 查看项目
+  - icon: ⚡
+    title: 极致速度
     details: 基于 Vite 的开发服务器即时热更新，构建生产站点快如闪电。
-  - title: 高度可定制
+  - icon: 🎨
+    title: 高度可定制
     details: 可使用默认主题的扩展 API，也可以完全自定义主题与样式。
 ---
